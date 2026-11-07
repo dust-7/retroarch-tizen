@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="utf-8">
+   <title>RetroArch Web Player</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body style="background-color: black;">
+   <main id="main">
+      <div id="canvas-wrapper">
+         <canvas id="canvas"></canvas>
+         <div id="loading-screen" class="active">
+            <div class="loading-pad"></div>
+            <img src="logo.png">
+            <div class="loading-pad">
+               <div class="spinner"></div>
+            </div>
+         </div>
+      </div>
+   </main>
+
+   <script src="scripts/logger.js"></script>
+   <script src="scripts/controller.js"></script>
+   <script src="scripts/browserfs.min.js"></script>
+   <script src="scripts/fs-manager.js"></script>
+   <script src="scripts/external-storage.js"></script>
+   <script src="scripts/app.js"></script>
+</body>
+
+</html>

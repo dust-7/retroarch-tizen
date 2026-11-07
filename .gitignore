@@ -1,0 +1,12 @@
+/.vscode/
+
+/app/.buildResult/
+/app/.tizen-rds/
+/app/assets/
+/app/Debug/
+/app/Release/
+/app/Test/
+/app/.project
+/app/.tproject
+/app/retroarch.js
+/app/retroarch.wasm
