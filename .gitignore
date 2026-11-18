@@ -10,3 +10,5 @@
 /app/.tproject
 /app/retroarch.js
 /app/retroarch.wasm
+
+/temp/

@@ -1,0 +1,81 @@
+name: Build app
+
+on:
+  workflow_dispatch:
+
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+        default: '0.1.0'
+      upload-artifact:
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Restore dummy core from cache
+        if: inputs.upload-artifact
+        id: restore-dummy
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            app/retroarch.js
+            app/retroarch.wasm
+          key: core-dummy-${{ github.run_id }}
+          restore-keys: |
+            core-dummy-
+
+      - name: Check if dummy core was restored
+        if: steps.restore-dummy.outputs.cache-matched-key != ''
+        run: echo "DUMMY_RESTORED=true" >> "$GITHUB_ENV"
+
+      - name: Restore emscripten from cache
+        if: env.DUMMY_RESTORED != 'true'
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/emscripten.zip
+          key: emscripten
+
+      - name: Restore bundle from cache
+        uses: actions/cache@v6
+        with:
+          path: app/assets/frontend/bundle.zip
+          key: bundle
+
+      - name: Restore Tizen Studio installer from cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/tizen-studio_6.0.bin
+          key: tizen-studio_6.0
+
+      - name: Build app
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          chmod +x scripts/build-app.sh
+          scripts/build-app.sh "$VERSION"
+
+      - name: Save dummy core to cache
+        if: env.DUMMY_RESTORED != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            app/retroarch.js
+            app/retroarch.wasm
+          key: core-dummy-${{ github.run_id }}
+
+      - name: Upload app as artifact
+        if: inputs.upload-artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: RetroArch.wgt
+          path: app/.buildResult/RetroArch.wgt
+          retention-days: 1
