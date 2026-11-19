@@ -1,0 +1,4 @@
+[
+  { "name": "gambatte", "repo": "gambatte-libretro", "subdir": "", "makefile": "Makefile.libretro", "extraFlags": "" },
+  { "name": "fbneo", "repo": "FBNeo", "subdir": "src/burner/libretro", "makefile": "Makefile", "extraFlags": "" }
+]

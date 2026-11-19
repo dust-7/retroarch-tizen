@@ -1,0 +1,97 @@
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  list-cores:
+    runs-on: ubuntu-latest
+    outputs:
+      cores: ${{ steps.read.outputs.cores }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: read
+        run: echo "cores=$(jq -c '.' scripts/cores.json)" >> $GITHUB_OUTPUT
+
+  build-cores:
+    needs: list-cores
+    strategy:
+      fail-fast: false
+      matrix:
+        item: ${{ fromJson(needs.list-cores.outputs.cores) }}
+    uses: ./.github/workflows/build-core.yml
+    with:
+      name: ${{ matrix.item.name }}
+      repo: ${{ matrix.item.repo }}
+      subdir: ${{ matrix.item.subdir }}
+      makefile: ${{ matrix.item.makefile }}
+      extra-flags: ${{ matrix.item.extraFlags }}
+
+  bundle-files:
+    needs: build-cores
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download core artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: site/cores
+          pattern: core-*
+          merge-multiple: true
+
+      - name: Create .index-extended
+        run: |
+          cd site/cores
+          for f in *.zip; do
+            date=$(date -r "$f" +%Y-%m-%d)
+            crc=$(unzip -lv "$f" | awk 'NR==4 {print $7}')
+            echo "$date $crc $f"
+          done > .index-extended
+
+      - name: Restore content from cache
+        id: restore-content
+        uses: actions/cache@v6
+        with:
+          path: site/assets/cores
+          key: content-${{ hashFiles('site/assets/cores/.index-dirs') }}
+
+      - name: Add content
+        if: steps.restore-content.outputs.cache-hit != 'true'
+        run: |
+          curl -L -o "$RUNNER_TEMP/nightly.7z" https://buildbot.libretro.com/nightly/emscripten/RetroArch.7z
+          7z x "$RUNNER_TEMP/nightly.7z" -o"$RUNNER_TEMP/nightly"
+          while IFS= read -r folder; do
+            cp -r "$RUNNER_TEMP/nightly/retroarch/assets/cores/$folder" site/assets/cores/
+          done < site/assets/cores/.index-dirs
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+          include-hidden-files: true
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: bundle-files
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
