@@ -1,4 +1,7 @@
 [
+  { "name": "fbneo", "repo": "FBNeo", "subdir": "src/burner/libretro", "makefile": "Makefile", "extraFlags": "" },
+  { "name": "fceumm", "repo": "libretro-fceumm", "subdir": "", "makefile": "Makefile.libretro", "extraFlags": "" },
   { "name": "gambatte", "repo": "gambatte-libretro", "subdir": "", "makefile": "Makefile.libretro", "extraFlags": "" },
-  { "name": "fbneo", "repo": "FBNeo", "subdir": "src/burner/libretro", "makefile": "Makefile", "extraFlags": "" }
+  { "name": "genesis_plus_gx", "repo": "Genesis-Plus-GX", "subdir": "", "makefile": "Makefile.libretro", "extraFlags": "" },
+  { "name": "snes9x", "repo": "snes9x", "subdir": "libretro", "makefile": "Makefile", "extraFlags": "" }
 ]
