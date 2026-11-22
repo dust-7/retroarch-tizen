@@ -34,7 +34,7 @@ jobs:
       repo: ${{ matrix.item.repo }}
       subdir: ${{ matrix.item.subdir }}
       makefile: ${{ matrix.item.makefile }}
-      extra-flags: ${{ matrix.item.extraFlags }}
+      extra_flags: ${{ matrix.item.extraFlags }}
 
   bundle-files:
     needs: build-cores
