@@ -2,13 +2,13 @@
 
 This is a Tizen port of RetroArch, for Samsung TVs running Tizen OS 5.5 and above.
 
-| <img src="docs/images/main-menu.webp" alt="Main Menu" width="600" /> | <img src="docs/images/content-downloader.webp" alt="Content Downloader" width="600" /> |
-| --- | --- |
+<img src="docs/images/main-menu.webp" alt="Main Menu" width="800" />
+<img src="docs/images/content-downloader.webp" alt="Content Downloader" width="800" />
 
 ## Quick Start
 
-- Go to [the latest release](https://github.com/dust-7/retroarch-tizen/releases/latest) and download `RetroArch_v*.wgt` under **Assets**.
-- Install the `.wgt` file to your TV using [Apps2Samsung](https://github.com/Apps2Samsung/Apps2Samsung).
+- Install the app to your TV using [Apps2Samsung](https://github.com/Apps2Samsung/Apps2Samsung) (search for RetroArch, dust-7 variant).
+  - Or, download `RetroArch_v*.wgt` from [the latest release](https://github.com/dust-7/retroarch-tizen/releases/latest), under **Assets**.
 - Run RetroArch on your TV. It starts with no cores and contents.
 - To download a core, go to **Main Menu > Load Core > Download a Core**.
 - To download free content, go to **Main Menu > Online Updater > Content Downloader**.
@@ -27,6 +27,7 @@ You can navigate the app with the TV remote. Most buttons can be rebound.
 The **Back** button defaults to Escape, and allows you to exit the app. If you wish to rebind it to a menu back action:
 - Go to **Settings > Input > RetroPad Binds > Port 1 Controls > A Button (Right)** and map it to **Back** button.
 - Next, go to **Settings > Input > Hotkeys > Quit** and map it to another button.
+- Finally, save your config by going to **Main Menu > Configuration File > Save Current Configuration**.
 
 While a content is loaded (i.e. you're in a game), you can press the **Red A** or **Play/Pause** button to toggle the Quick Menu.
 

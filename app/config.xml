@@ -5,7 +5,7 @@
     <feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
     <icon src="icon.png"/>
     <name>RetroArch</name>
-    <tizen:application id="tqgns83xtp.RetroArch" package="tqgns83xtp" required_version="2.3"/>
+    <tizen:application id="tqgns83xtp.RetroArch" package="tqgns83xtp" required_version="5.5"/>
     <tizen:metadata key="http://samsung.com/tv/metadata/prelaunch.support" value="true"/>
     <tizen:metadata key="http://tizen.org/metadata/app_ui_type/base_screen_resolution" value="extensive"/>
     <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
