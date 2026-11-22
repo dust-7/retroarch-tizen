@@ -18,9 +18,33 @@ jobs:
     outputs:
       cores: ${{ steps.read.outputs.cores }}
     steps:
-      - uses: actions/checkout@v7
-      - id: read
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Get list of cores
+        id: read
         run: echo "cores=$(jq -c '.' scripts/cores.json)" >> $GITHUB_OUTPUT
+
+      - name: Check if emscripten is cached
+        id: check-emscripten
+        uses: actions/cache/restore@v6
+        with:
+          path: emscripten.zip
+          key: emscripten
+          lookup-only: true
+
+      - name: Download emscripten
+        if: steps.check-emscripten.outputs.cache-hit != 'true'
+        run: |
+          # SDK 1.39.4.7 from https://developer.samsung.com/smarttv/develop/extension-libraries/webassembly/download.html
+          curl -L -o emscripten.zip https://developer.samsung.com/smarttv/file/a5013a65-af11-4b59-844f-2d34f14d19a9
+
+      - name: Save emscripten to cache
+        if: steps.check-emscripten.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: emscripten.zip
+          key: emscripten
 
   build-cores:
     needs: list-cores
@@ -41,7 +65,7 @@ jobs:
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v7
 
       - name: Download core artifacts
