@@ -2,6 +2,15 @@ name: Deploy to GitHub Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      use_cached_cores:
+        required: false
+        type: boolean
+        default: true
+      use_cached_content:
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -59,6 +68,7 @@ jobs:
       subdir: ${{ matrix.item.subdir }}
       makefile: ${{ matrix.item.makefile }}
       extra_flags: ${{ matrix.item.extraFlags }}
+      use_cached_core: ${{ inputs.use_cached_cores }}
 
   bundle-files:
     needs: build-cores
@@ -85,20 +95,30 @@ jobs:
           done > .index-extended
 
       - name: Restore content from cache
+        if: inputs.use_cached_content
         id: restore-content
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: site/assets/cores
-          key: content-${{ hashFiles('site/assets/cores/.index-dirs') }}
+          key: content-${{ github.run_id }}
+          restore-keys: |
+            content-
 
       - name: Add content
-        if: steps.restore-content.outputs.cache-hit != 'true'
+        if: inputs.use_cached_content != true || steps.restore-content.outputs.cache-matched-key == ''
         run: |
           curl -L -o "$RUNNER_TEMP/nightly.7z" https://buildbot.libretro.com/nightly/emscripten/RetroArch.7z
           7z x "$RUNNER_TEMP/nightly.7z" -o"$RUNNER_TEMP/nightly"
           while IFS= read -r folder; do
             cp -r "$RUNNER_TEMP/nightly/retroarch/assets/cores/$folder" site/assets/cores/
           done < site/assets/cores/.index-dirs
+
+      - name: Save content to cache
+        if: inputs.use_cached_content != true || steps.restore-content.outputs.cache-matched-key == ''
+        uses: actions/cache/save@v6
+        with:
+          path: site/assets/cores
+          key: content-${{ github.run_id }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
@@ -110,6 +130,7 @@ jobs:
           include-hidden-files: true
 
   deploy:
+    if: ${{ !cancelled() && needs.bundle-files.result == 'success' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

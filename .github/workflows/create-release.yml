@@ -11,12 +11,22 @@ on:
         required: false
         type: boolean
         default: true
+      use_cached_dummy:
+        required: false
+        type: boolean
+        default: true
+      use_cached_bundle:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   build:
     uses: ./.github/workflows/build-app.yml
     with:
       version: ${{ inputs.version }}
+      use_cached_dummy: ${{ inputs.use_cached_dummy }}
+      use_cached_bundle: ${{ inputs.use_cached_bundle }}
 
   release:
     runs-on: ubuntu-latest
