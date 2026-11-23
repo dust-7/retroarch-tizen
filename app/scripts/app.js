@@ -10,8 +10,6 @@ const app = (() => {
 
   const ModuleBase = {
     noInitialRun: true,
-    retroArchSend: (msg) => this.EmscriptenSendCommand(msg),
-    retroArchRecv: () => this.EmscriptenReceiveCommandReply(),
     retroArchExit: (core, content) => {
       // "Quit"
       if (core === 0) {

@@ -1,13 +1,12 @@
 --- fastcomp/emscripten/src/modules.js	2026-11-16 14:46:13.496637734 +0800
 +++ fastcomp/emscripten/src/modules.js	2026-11-16 14:28:33.424299641 +0800
-@@ -437,6 +437,10 @@
+@@ -437,6 +437,9 @@
      'setTempRet0',
      'callMain',
      'abort',
 +    'PATH',
 +    'ERRNO_CODES',
 +    'stringToNewUTF8',
-+    'Browser',
    ];
  
    if (!MINIMAL_RUNTIME) {

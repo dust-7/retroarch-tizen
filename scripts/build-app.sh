@@ -37,11 +37,8 @@ if [ ! -f "$GITHUB_WORKSPACE/app/assets/frontend/bundle.zip" ]; then
   7z x nightly.7z -onightly
   cat nightly/retroarch/assets/frontend/bundle.zip.* > bundle.zip
   unzip -q bundle.zip
-  rm -rf bundle/database
-  mkdir -p bundle/database/rdb
-  echo x > bundle/database/rdb/placeholder
   mkdir -p "$GITHUB_WORKSPACE/app/assets/frontend/"
-  zip -rq "$GITHUB_WORKSPACE/app/assets/frontend/bundle.zip" bundle/{assets,autoconfig,database,filters,info}
+  zip -rq "$GITHUB_WORKSPACE/app/assets/frontend/bundle.zip" bundle/{assets,autoconfig,filters,info}
 fi
 
 # set up Tizen Studio
