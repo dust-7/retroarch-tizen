@@ -19,7 +19,7 @@ if [[ ! -f "$GITHUB_WORKSPACE/app/retroarch.js" || ! -f "$GITHUB_WORKSPACE/app/r
   fi
   unzip -q emscripten.zip
   cd ./emscripten-release-bundle/emsdk
-  patch fastcomp/emscripten/src/modules.js < "$GITHUB_WORKSPACE/scripts/emscripten.patch"
+  patch fastcomp/emscripten/src/modules.js < "$GITHUB_WORKSPACE/scripts/patches/emscripten.patch"
   ./emsdk activate latest-fastcomp
   source ./emsdk_env.sh
 

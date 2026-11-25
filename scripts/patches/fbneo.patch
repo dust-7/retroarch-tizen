@@ -1,0 +1,13 @@
+diff --git a/src/burner/libretro/Makefile b/src/burner/libretro/Makefile
+index 582d5ce66..dccc066a5 100644
+--- a/src/burner/libretro/Makefile
++++ b/src/burner/libretro/Makefile
+@@ -415,7 +415,7 @@ else ifeq ($(platform), emscripten)
+ 	TARGET := $(TARGET_NAME)_libretro_$(platform).bc
+ 	ENDIANNESS_DEFINES := -DLSB_FIRST
+ 	INCLUDE_7Z_SUPPORT = 1
+-	EXTERNAL_ZLIB = 1
++	EXTERNAL_ZLIB = 0
+ 	STATIC_LINKING = 1
+ 	FASTMATH = 0
+ 

@@ -16,9 +16,9 @@ on:
         type: string
         default: ''
       makefile:
-        required: true
+        required: false
         type: string
-        default: 'Makefile.libretro'
+        default: ''
       extra_flags:
         required: false
         type: string
@@ -36,7 +36,7 @@ on:
         required: false
         type: string
       makefile:
-        required: true
+        required: false
         type: string
       extra_flags:
         required: false
@@ -46,39 +46,49 @@ on:
         type: boolean
         default: true
 
+env:
+  CORE_ZIP: ${{ inputs.name }}_libretro.zip
+
 jobs:
-  build:
-    runs-on: ubuntu-24.04
-    env:
-      CORE_ZIP: ${{ inputs.name }}_libretro.zip
+  restore-core:
+    runs-on: ubuntu-latest
+    if: inputs.use_cached_core
+    outputs:
+      artifact-id: ${{ steps.artifact.outputs.artifact-id }}
     steps:
       - name: Restore core from cache
-        if: inputs.use_cached_core
         id: restore-core
-        uses: actions/cache/restore@v6
+        uses: actions/cache@v6
         with:
           path: ${{ runner.temp }}/${{ env.CORE_ZIP }}
           key: core-${{ inputs.name }}-${{ github.run_id }}
           restore-keys: |
             core-${{ inputs.name }}-
 
-      - name: Check if core was restored
-        if: steps.restore-core.outputs.cache-matched-key != ''
-        run: echo "CORE_RESTORED=true" >> "$GITHUB_ENV"
+      - name: Upload core as artifact
+        id: artifact
+        uses: actions/upload-artifact@v7
+        if: steps.restore-core.outputs.cache-hit != ''
+        with:
+          name: core-${{ inputs.name }}
+          path: ${{ runner.temp }}/${{ env.CORE_ZIP }}
+          retention-days: 1
 
+  build:
+    needs: restore-core
+    runs-on: ubuntu-24.04
+    if: always() && !cancelled() && needs.restore-core.outputs.artifact-id == ''
+    steps:
       - name: Checkout repository
-        if: env.CORE_RESTORED != 'true'
         uses: actions/checkout@v7
 
       - name: Restore emscripten from cache
-        if: env.CORE_RESTORED != 'true'
         uses: actions/cache@v6
         with:
           path: ${{ runner.temp }}/emscripten.zip
           key: emscripten
 
       - name: Build core
-        if: env.CORE_RESTORED != 'true'
         id: build
         env:
           NAME: ${{ inputs.name }}
@@ -91,7 +101,6 @@ jobs:
           scripts/build-core.sh "$NAME" "$REPO" "$SUBDIR" "$MAKEFILE" "$EXTRA_FLAGS"
 
       - name: Save core to cache
-        if: env.CORE_RESTORED != 'true'
         uses: actions/cache/save@v6
         with:
           path: ${{ runner.temp }}/${{ env.CORE_ZIP }}

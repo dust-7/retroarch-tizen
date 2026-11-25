@@ -7,8 +7,8 @@ set -e
 
 NAME=$1
 REPO=$2
-SUBDIR="${3:-}"
-MAKEFILE=$4
+SUBDIR="${3:-.}"
+MAKEFILE="${4:-Makefile}"
 EXTRA_FLAGS="${5:-}"
 
 # set up Samsung Empscripten SDK
@@ -19,7 +19,7 @@ if [ ! -f emscripten.zip ]; then
 fi
 unzip -q emscripten.zip
 cd ./emscripten-release-bundle/emsdk
-patch fastcomp/emscripten/src/modules.js < "$GITHUB_WORKSPACE/scripts/emscripten.patch"
+patch fastcomp/emscripten/src/modules.js < "$GITHUB_WORKSPACE/scripts/patches/emscripten.patch"
 ./emsdk activate latest-fastcomp
 source ./emsdk_env.sh
 
@@ -28,10 +28,26 @@ cd "$RUNNER_TEMP"
 git clone --depth 1 "https://github.com/libretro/${REPO}.git"
 git clone --depth 1 https://github.com/dust-7/RetroArch.git
 
-# build core
-cd "$REPO/$SUBDIR"
-emmake make -f "$MAKEFILE" platform=emscripten -j$(nproc)
-cp "./${NAME}_libretro_emscripten.bc" "$RUNNER_TEMP/RetroArch/libretro_emscripten.bc"
+cd "$REPO"
+# apply patch to core's codebase
+if [[ -f "$GITHUB_WORKSPACE/scripts/patches/$NAME.patch" ]]; then
+    git apply "$GITHUB_WORKSPACE/scripts/patches/$NAME.patch"
+fi
+
+# build core bitcode
+if [[ "$NAME" == "mgba" ]]; then
+  # cmake
+  mkdir -p build
+  emcmake cmake -S "$SUBDIR" -B build -DCMAKE_BUILD_TYPE=Release -DLIBRETRO_STATIC=ON -DLIBRETRO_SUFFIX=_emscripten ${EXTRA_FLAGS}
+  emmake cmake --build build --target "${NAME}_libretro" --config Release -- -j$(nproc)
+  mv "build/${NAME}_libretro_emscripten.bc" "$RUNNER_TEMP/RetroArch/libretro_emscripten.bc"
+else
+  # make
+  emmake make -C "$SUBDIR" -f "$MAKEFILE" platform=emscripten -j$(nproc)
+  mv "$SUBDIR/${NAME}_libretro_emscripten.bc" "$RUNNER_TEMP/RetroArch/libretro_emscripten.bc"
+fi
+
+# compile to wasm
 cd "$RUNNER_TEMP"/RetroArch
-emmake make -f Makefile.tizen "LIBRETRO=${NAME}" ${EXTRA_FLAGS} -j$(nproc)
+emmake make -f Makefile.tizen "LIBRETRO=${NAME}" -j$(nproc)
 zip -q "$RUNNER_TEMP/${NAME}_libretro.zip" "${NAME}_libretro."{js,wasm}

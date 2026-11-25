@@ -38,7 +38,7 @@ jobs:
             core-dummy-
 
       - name: Restore emscripten from cache
-        if: inputs.use_cached_dummy != true || steps.restore-dummy.outputs.cache-matched-key == ''
+        if: inputs.use_cached_dummy != true || steps.restore-dummy.outputs.cache-hit == ''
         uses: actions/cache@v6
         with:
           path: ${{ runner.temp }}/emscripten.zip
@@ -68,7 +68,7 @@ jobs:
           scripts/build-app.sh "$VERSION"
 
       - name: Save dummy core to cache
-        if: inputs.use_cached_dummy != true || steps.restore-dummy.outputs.cache-matched-key == ''
+        if: inputs.use_cached_dummy != true || steps.restore-dummy.outputs.cache-hit == ''
         uses: actions/cache/save@v6
         with:
           path: |
@@ -77,7 +77,7 @@ jobs:
           key: core-dummy-${{ github.run_id }}
 
       - name: Save bundle to cache
-        if: inputs.use_cached_bundle != true || steps.restore-bundle.outputs.cache-matched-key == ''
+        if: inputs.use_cached_bundle != true || steps.restore-bundle.outputs.cache-hit == ''
         uses: actions/cache/save@v6
         with:
           path: app/assets/frontend/bundle.zip

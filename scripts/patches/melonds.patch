@@ -1,0 +1,12 @@
+diff --git a/Makefile b/Makefile
+index 6d79be7..855a2c0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -180,6 +180,7 @@ else ifeq ($(platform), emscripten)
+    TARGET := $(TARGET_NAME)_libretro_emscripten.bc
+    fpic := -fPIC
+    SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl
++   STATIC_LINKING = 1
+ else ifeq ($(platform), vita)
+    TARGET := $(TARGET_NAME)_vita.a
+    CC = arm-vita-eabi-gcc
