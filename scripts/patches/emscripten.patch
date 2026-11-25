@@ -1,3 +1,5 @@
+Makefile.tizen in RetroArch repo expects to export these methods, add them to runtimeElements in emscripten so they can be exported successfully.
+
 --- fastcomp/emscripten/src/modules.js	2026-11-16 14:46:13.496637734 +0800
 +++ fastcomp/emscripten/src/modules.js	2026-11-16 14:28:33.424299641 +0800
 @@ -437,6 +437,9 @@

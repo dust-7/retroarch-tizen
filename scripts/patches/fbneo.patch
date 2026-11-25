@@ -1,3 +1,7 @@
+Fixes following error (introduced in commit 84b9ef052091b8c0885a479f444ae08bd840bc4c):
+
+error: undefined symbol: inflateValidate
+
 diff --git a/src/burner/libretro/Makefile b/src/burner/libretro/Makefile
 index 582d5ce66..dccc066a5 100644
 --- a/src/burner/libretro/Makefile

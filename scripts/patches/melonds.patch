@@ -1,3 +1,7 @@
+Fixes following error:
+
+shared:ERROR: libretro_emscripten.a: File has a suffix of a static library ('.a',), but instead is an LLVM bitcode file! When linking LLVM bitcode files, use one of the suffixes ('.bc', '.o', '.obj', '.lo')
+
 diff --git a/Makefile b/Makefile
 index 6d79be7..855a2c0 100644
 --- a/Makefile
